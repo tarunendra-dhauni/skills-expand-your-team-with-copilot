@@ -357,14 +357,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (platform === "copy") {
       try {
-        const wasCopied = await copyShareTextToClipboard(combinedShareText);
+        const wasCopied = await copyShareTextToClipboard(shareUrl);
         if (wasCopied) {
-          showMessage("Share message copied to clipboard.", "success");
+          showMessage("Link copied to clipboard.", "success");
         } else {
-          showMessage("Could not copy the share message.", "error");
+          showMessage("Could not copy the link.", "error");
         }
       } catch (error) {
-        showMessage("Could not copy the share message.", "error");
+        showMessage("Could not copy the link.", "error");
       }
       return;
     }
