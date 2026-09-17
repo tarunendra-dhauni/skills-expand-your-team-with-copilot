@@ -613,14 +613,14 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
-      <div class="share-actions" aria-label="Share ${name}">
-        <button class="share-button share-button-native" data-platform="native">
+      <div class="share-actions" role="group" aria-label="Share ${name}">
+        <button type="button" class="share-button share-button-native" data-platform="native">
           Share
         </button>
-        <button class="share-button" data-platform="whatsapp">WhatsApp</button>
-        <button class="share-button" data-platform="x">X</button>
-        <button class="share-button" data-platform="facebook">Facebook</button>
-        <button class="share-button" data-platform="copy">Copy Link</button>
+        <button type="button" class="share-button" data-platform="whatsapp">WhatsApp</button>
+        <button type="button" class="share-button" data-platform="x">X</button>
+        <button type="button" class="share-button" data-platform="facebook">Facebook</button>
+        <button type="button" class="share-button" data-platform="copy">Copy Link</button>
       </div>
       <div class="participants-list">
         <h5>Current Participants:</h5>
