@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getActivityShareUrl(name) {
-    const shareUrl = new URL(window.location.href);
+    const shareUrl = new URL(window.location.pathname, window.location.origin);
     shareUrl.searchParams.set("activity", name);
     return shareUrl.toString();
   }
@@ -613,7 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
-      <div class="share-actions" role="group" aria-label="Share ${name}">
+      <div class="share-actions" role="group" aria-label="Share this activity">
         <button type="button" class="share-button share-button-native" data-platform="native">
           Share
         </button>
