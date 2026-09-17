@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getActivityShareUrl(name) {
-    const shareUrl = new URL(window.location.pathname, window.location.origin);
+    const shareUrl = new URL(window.location.href);
     shareUrl.searchParams.set("activity", name);
     return shareUrl.toString();
   }
@@ -349,7 +349,15 @@ document.addEventListener("DOMContentLoaded", () => {
         showMessage("Activity shared successfully.", "success");
       } catch (error) {
         if (error.name !== "AbortError") {
-          showMessage("Could not share this activity right now.", "error");
+          const wasCopied = await copyShareTextToClipboard(combinedShareText);
+          if (wasCopied) {
+            showMessage(
+              "Could not open share panel. Share message copied instead.",
+              "info"
+            );
+          } else {
+            showMessage("Could not share this activity right now.", "error");
+          }
         }
       }
       return;
@@ -613,7 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
-      <div class="share-actions" role="group" aria-label="Share this activity">
+      <div class="share-actions" role="group">
         <button type="button" class="share-button share-button-native" data-platform="native">
           Share
         </button>
@@ -673,6 +681,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Add click handlers for sharing buttons
     const shareButtons = activityCard.querySelectorAll(".share-button");
+    const shareActionsGroup = activityCard.querySelector(".share-actions");
     const shareButtonLabels = {
       native: "Share activity",
       whatsapp: "Share on WhatsApp",
@@ -680,6 +689,9 @@ document.addEventListener("DOMContentLoaded", () => {
       facebook: "Share on Facebook",
       copy: "Copy share message",
     };
+    if (shareActionsGroup) {
+      shareActionsGroup.setAttribute("aria-label", `Share ${name}`);
+    }
     shareButtons.forEach((button) => {
       const shareLabel = shareButtonLabels[button.dataset.platform] || "Share";
       button.setAttribute("aria-label", `${shareLabel}: ${name}`);
