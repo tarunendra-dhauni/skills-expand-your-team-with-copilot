@@ -357,14 +357,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (platform === "copy") {
       try {
-        const wasCopied = await copyShareTextToClipboard(shareUrl);
+        const wasCopied = await copyShareTextToClipboard(combinedShareText);
         if (wasCopied) {
-          showMessage("Link copied to clipboard.", "success");
+          showMessage("Share message copied to clipboard.", "success");
         } else {
-          showMessage("Could not copy the link.", "error");
+          showMessage("Could not copy the share message.", "error");
         }
       } catch (error) {
-        showMessage("Could not copy the link.", "error");
+        showMessage("Could not copy the share message.", "error");
       }
       return;
     }
@@ -620,7 +620,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button type="button" class="share-button" data-platform="whatsapp">WhatsApp</button>
         <button type="button" class="share-button" data-platform="x">X</button>
         <button type="button" class="share-button" data-platform="facebook">Facebook</button>
-        <button type="button" class="share-button" data-platform="copy">Copy Link</button>
+        <button type="button" class="share-button" data-platform="copy">Copy Message</button>
       </div>
       <div class="participants-list">
         <h5>Current Participants:</h5>
@@ -673,7 +673,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Add click handlers for sharing buttons
     const shareButtons = activityCard.querySelectorAll(".share-button");
+    const shareButtonLabels = {
+      native: "Share activity",
+      whatsapp: "Share on WhatsApp",
+      x: "Share on X",
+      facebook: "Share on Facebook",
+      copy: "Copy share message",
+    };
     shareButtons.forEach((button) => {
+      const shareLabel = shareButtonLabels[button.dataset.platform] || "Share";
+      button.setAttribute("aria-label", `${shareLabel}: ${name}`);
       button.addEventListener("click", () => {
         shareActivity(button.dataset.platform, name, details);
       });
