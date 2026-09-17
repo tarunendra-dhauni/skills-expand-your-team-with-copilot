@@ -310,6 +310,15 @@ document.addEventListener("DOMContentLoaded", () => {
     )}`;
   }
 
+  function escapeHtmlAttribute(text) {
+    return text
+      .replaceAll("&", "&amp;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
   function getActivityShareUrl(name) {
     const shareUrl = new URL(window.location.href);
     shareUrl.searchParams.set("activity", name);
@@ -569,6 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
     activityCard.className = "activity-card";
+    const escapedNameForAttribute = escapeHtmlAttribute(name);
 
     // Calculate spots and capacity
     const totalSpots = details.max_participants;
@@ -621,14 +631,14 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
-      <div class="share-actions" role="group">
-        <button type="button" class="share-button share-button-native" data-platform="native">
+      <div class="share-actions" role="group" aria-label="Share ${escapedNameForAttribute}">
+        <button type="button" class="share-button share-button-native" data-platform="native" aria-label="Share activity: ${escapedNameForAttribute}">
           Share
         </button>
-        <button type="button" class="share-button" data-platform="whatsapp">WhatsApp</button>
-        <button type="button" class="share-button" data-platform="x">X</button>
-        <button type="button" class="share-button" data-platform="facebook">Facebook</button>
-        <button type="button" class="share-button" data-platform="copy">Copy Message</button>
+        <button type="button" class="share-button" data-platform="whatsapp" aria-label="Share on WhatsApp: ${escapedNameForAttribute}">WhatsApp</button>
+        <button type="button" class="share-button" data-platform="x" aria-label="Share on X: ${escapedNameForAttribute}">X</button>
+        <button type="button" class="share-button" data-platform="facebook" aria-label="Share on Facebook: ${escapedNameForAttribute}">Facebook</button>
+        <button type="button" class="share-button" data-platform="copy" aria-label="Copy share message: ${escapedNameForAttribute}">Copy Message</button>
       </div>
       <div class="participants-list">
         <h5>Current Participants:</h5>
@@ -681,20 +691,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Add click handlers for sharing buttons
     const shareButtons = activityCard.querySelectorAll(".share-button");
-    const shareActionsGroup = activityCard.querySelector(".share-actions");
-    const shareButtonLabels = {
-      native: "Share activity",
-      whatsapp: "Share on WhatsApp",
-      x: "Share on X",
-      facebook: "Share on Facebook",
-      copy: "Copy share message",
-    };
-    if (shareActionsGroup) {
-      shareActionsGroup.setAttribute("aria-label", `Share ${name}`);
-    }
     shareButtons.forEach((button) => {
-      const shareLabel = shareButtonLabels[button.dataset.platform] || "Share";
-      button.setAttribute("aria-label", `${shareLabel}: ${name}`);
       button.addEventListener("click", () => {
         shareActivity(button.dataset.platform, name, details);
       });
