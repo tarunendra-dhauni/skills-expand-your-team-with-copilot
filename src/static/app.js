@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryFilters = document.querySelectorAll(".category-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
 
   // Authentication elements
   const loginButton = document.getElementById("login-button");
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
+  let currentDifficulty = "";
 
   // Authentication state
   let currentUser = null;
@@ -63,6 +65,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeTimeFilter = document.querySelector(".time-filter.active");
     if (activeTimeFilter) {
       currentTimeRange = activeTimeFilter.dataset.time;
+    }
+
+    const activeDifficultyFilter = document.querySelector(
+      ".difficulty-filter.active"
+    );
+    if (activeDifficultyFilter) {
+      currentDifficulty = activeDifficultyFilter.dataset.difficulty;
     }
   }
 
@@ -89,6 +98,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update active class
     timeFilters.forEach((btn) => {
       if (btn.dataset.time === timeRange) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    fetchActivities();
+  }
+
+  function setDifficultyFilter(difficulty) {
+    currentDifficulty = difficulty;
+
+    difficultyFilters.forEach((btn) => {
+      if (btn.dataset.difficulty === difficulty) {
         btn.classList.add("active");
       } else {
         btn.classList.remove("active");
@@ -363,7 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return "academic";
   }
 
-  // Function to fetch activities from API with optional day and time filters
+  // Function to fetch activities from API with optional day, time, and difficulty filters
   async function fetchActivities() {
     // Show loading skeletons first
     showLoadingSkeletons();
@@ -392,6 +415,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      if (currentDifficulty) {
+        queryParams.push(`difficulty=${encodeURIComponent(currentDifficulty)}`);
+      }
+
       const queryString =
         queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
       const response = await fetch(`/activities${queryString}`);
@@ -414,7 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Clear the activities list
     activitiesList.innerHTML = "";
 
-    // Apply client-side filtering - this handles category filter and search, plus weekend filter
+    // Apply client-side filtering - this handles category, search, and weekend filters
     let filteredActivities = {};
 
     Object.entries(allActivities).forEach(([name, details]) => {
@@ -498,6 +525,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Format the schedule using the new helper function
     const formattedSchedule = formatSchedule(details);
+    const formattedDifficulty = details.difficulty
+      ? details.difficulty.charAt(0).toUpperCase() + details.difficulty.slice(1)
+      : "";
 
     // Create activity tag
     const tagHtml = `
@@ -527,6 +557,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <strong>Schedule:</strong> ${formattedSchedule}
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
+      ${
+        formattedDifficulty
+          ? `<p><strong>Difficulty:</strong> ${formattedDifficulty}</p>`
+          : ""
+      }
       ${capacityIndicator}
       <div class="participants-list">
         <h5>Current Participants:</h5>
@@ -638,6 +673,15 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update current time filter and fetch activities
       currentTimeRange = button.dataset.time;
       fetchActivities();
+    });
+  });
+
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextDifficulty = button.classList.contains("active")
+        ? ""
+        : button.dataset.difficulty;
+      setDifficultyFilter(nextDifficulty);
     });
   });
 
@@ -859,6 +903,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.activityFilters = {
     setDayFilter,
     setTimeRangeFilter,
+    setDifficultyFilter,
   };
 
   // Initialize app
