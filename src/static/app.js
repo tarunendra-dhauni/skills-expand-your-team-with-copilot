@@ -115,7 +115,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initializeTheme() {
-    applyTheme(localStorage.getItem("theme") || "light");
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      applyTheme(savedTheme);
+      return;
+    }
+
+    const prefersDarkMode =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(prefersDarkMode ? "dark" : "light");
   }
 
   function toggleTheme() {
