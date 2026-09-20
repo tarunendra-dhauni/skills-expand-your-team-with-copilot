@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const difficultyFilters = document.querySelectorAll(".difficulty-filter");
 
   // Authentication elements
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeToggleIcon = themeToggle?.querySelector(".theme-icon");
+  const themeToggleLabel = document.getElementById("theme-toggle-label");
   const loginButton = document.getElementById("login-button");
   const userInfo = document.getElementById("user-info");
   const displayName = document.getElementById("display-name");
@@ -45,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication state
   let currentUser = null;
+  let currentTheme = "light";
 
   // Time range mappings for the dropdown
   const timeRanges = {
@@ -105,6 +109,57 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     fetchActivities();
+  }
+
+  // Theme state
+  function applyTheme(theme) {
+    currentTheme = theme === "dark" ? "dark" : "light";
+    document.body.dataset.theme = currentTheme;
+
+    const darkModeEnabled = currentTheme === "dark";
+    const nextThemeLabel = darkModeEnabled ? "Light mode" : "Dark mode";
+    if (themeToggle) {
+      themeToggle.setAttribute("aria-label", nextThemeLabel);
+      themeToggle.setAttribute("aria-pressed", String(darkModeEnabled));
+    }
+
+    if (themeToggleIcon) {
+      themeToggleIcon.textContent = darkModeEnabled ? "☀️" : "🌙";
+    }
+
+    if (themeToggleLabel) {
+      themeToggleLabel.textContent = nextThemeLabel;
+    }
+  }
+
+  function initializeTheme() {
+    let savedTheme = null;
+    try {
+      savedTheme = localStorage.getItem("theme");
+    } catch (error) {
+      console.warn("Could not read saved theme preference.", error);
+    }
+
+    if (savedTheme === "light" || savedTheme === "dark") {
+      applyTheme(savedTheme);
+      return;
+    }
+
+    const prefersDarkMode =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(prefersDarkMode ? "dark" : "light");
+  }
+
+  function toggleTheme() {
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
+
+    try {
+      localStorage.setItem("theme", nextTheme);
+    } catch (error) {
+      console.warn("Could not save theme preference.", error);
+    }
   }
 
   function setDifficultyFilter(difficulty) {
@@ -258,6 +313,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Event listeners for authentication
+  if (themeToggle) {
+    themeToggle.addEventListener("click", toggleTheme);
+  }
   loginButton.addEventListener("click", openLoginModal);
   logoutButton.addEventListener("click", logout);
   closeLoginModal.addEventListener("click", closeLoginModalHandler);
@@ -907,6 +965,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initializeTheme();
   checkAuthentication();
   initializeFilters();
   fetchActivities();
