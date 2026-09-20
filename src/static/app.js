@@ -124,7 +124,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initializeTheme() {
-    const savedTheme = localStorage.getItem("theme");
+    let savedTheme = null;
+    try {
+      savedTheme = localStorage.getItem("theme");
+    } catch (error) {
+      console.warn("Could not read saved theme preference.", error);
+    }
+
     if (savedTheme === "light" || savedTheme === "dark") {
       applyTheme(savedTheme);
       return;
@@ -138,8 +144,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function toggleTheme() {
     const nextTheme = currentTheme === "dark" ? "light" : "dark";
-    localStorage.setItem("theme", nextTheme);
     applyTheme(nextTheme);
+
+    try {
+      localStorage.setItem("theme", nextTheme);
+    } catch (error) {
+      console.warn("Could not save theme preference.", error);
+    }
   }
 
   // Check if user is already logged in (from localStorage)
