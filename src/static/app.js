@@ -106,6 +106,10 @@ document.addEventListener("DOMContentLoaded", () => {
     currentTheme = theme === "dark" ? "dark" : "light";
     document.body.dataset.theme = currentTheme;
 
+    if (!themeToggle || !themeToggleLabel) {
+      return;
+    }
+
     const darkModeEnabled = currentTheme === "dark";
     themeToggle.setAttribute("aria-pressed", String(darkModeEnabled));
     themeToggle.querySelector(".theme-icon").textContent = darkModeEnabled
@@ -270,7 +274,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Event listeners for authentication
-  themeToggle.addEventListener("click", toggleTheme);
+  if (themeToggle) {
+    themeToggle.addEventListener("click", toggleTheme);
+  }
   loginButton.addEventListener("click", openLoginModal);
   logoutButton.addEventListener("click", logout);
   closeLoginModal.addEventListener("click", closeLoginModalHandler);
