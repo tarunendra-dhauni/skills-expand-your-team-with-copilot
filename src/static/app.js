@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication elements
   const themeToggle = document.getElementById("theme-toggle");
-  const themeToggleLabel = document.getElementById("theme-toggle-label");
+  const themeToggleIcon = themeToggle?.querySelector(".theme-icon");
   const loginButton = document.getElementById("login-button");
   const userInfo = document.getElementById("user-info");
   const displayName = document.getElementById("display-name");
@@ -106,16 +106,14 @@ document.addEventListener("DOMContentLoaded", () => {
     currentTheme = theme === "dark" ? "dark" : "light";
     document.body.dataset.theme = currentTheme;
 
-    if (!themeToggle || !themeToggleLabel) {
-      return;
+    const darkModeEnabled = currentTheme === "dark";
+    if (themeToggle) {
+      themeToggle.setAttribute("aria-pressed", String(darkModeEnabled));
     }
 
-    const darkModeEnabled = currentTheme === "dark";
-    themeToggle.setAttribute("aria-pressed", String(darkModeEnabled));
-    themeToggle.querySelector(".theme-icon").textContent = darkModeEnabled
-      ? "☀️"
-      : "🌙";
-    themeToggleLabel.textContent = darkModeEnabled ? "Light mode" : "Dark mode";
+    if (themeToggleIcon) {
+      themeToggleIcon.textContent = darkModeEnabled ? "☀️" : "🌙";
+    }
   }
 
   function initializeTheme() {
